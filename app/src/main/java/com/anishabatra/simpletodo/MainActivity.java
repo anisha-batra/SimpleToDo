@@ -2,7 +2,9 @@ package com.anishabatra.simpletodo;
 
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
+import android.util.Log;
 import android.view.View;
+import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.EditText;
 import android.widget.ListView;
@@ -29,6 +31,8 @@ public class MainActivity extends AppCompatActivity {
         // mock data
         items.add("First item");
         items.add("Second item");
+
+        setupListViewListener();
     }
 
     public void onAddItem(View v) {
@@ -38,5 +42,18 @@ public class MainActivity extends AppCompatActivity {
         etNewItem.setText("");
 
         Toast.makeText(getApplicationContext(), "Item added to list", Toast.LENGTH_SHORT).show();
+    }
+
+    private void setupListViewListener() {
+        lvItems.setOnItemLongClickListener(new AdapterView.OnItemLongClickListener() {
+
+            @Override
+            public boolean onItemLongClick(AdapterView<?> parent, View view, int position, long id) {
+                Log.i("MainActivity", "Item removed from list: " + position);
+                items.remove(position);
+                itemsAdapter.notifyDataSetChanged();
+                return true;
+            }
+        });
     }
 }
