@@ -8,7 +8,8 @@ public class Todo implements Serializable {
     private Date dueDate;
     private String priority;
     private String notes;
-    private String status;
+
+    private boolean IsComplete;
 
     public String getTaskName() {
         return taskName;
@@ -42,13 +43,14 @@ public class Todo implements Serializable {
         this.notes = notes;
     }
 
-    public String getStatus() {
-        return status;
+    public boolean isComplete() {
+        return IsComplete;
     }
 
-    public void setStatus(String status) {
-        this.status = status;
+    public void setComplete(boolean complete) {
+        IsComplete = complete;
     }
+
 
     @Override
     public String toString() {

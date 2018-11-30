@@ -16,8 +16,8 @@
         android:onClick="onAddItem"
         android:text="Add" />
 
-    <ListView
-        android:id="@+id/lvItems"
+    <android.support.v7.widget.RecyclerView
+        android:id="@+id/recyclerViewTodos"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:layout_above="@+id/btnAddItem"
