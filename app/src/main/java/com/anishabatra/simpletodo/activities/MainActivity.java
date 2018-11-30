@@ -3,16 +3,17 @@ package com.anishabatra.simpletodo.activities;
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
+import android.support.design.widget.FloatingActionButton;
+import android.support.v4.app.FragmentManager;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.util.Log;
 import android.view.View;
-import android.widget.EditText;
-import android.widget.Toast;
 
 import com.anishabatra.simpletodo.R;
 import com.anishabatra.simpletodo.adapters.TodoItemsAdapter;
+import com.anishabatra.simpletodo.fragments.EditTaskDialogFragment;
 import com.anishabatra.simpletodo.models.Todo;
 
 import java.io.FileInputStream;
@@ -33,6 +34,8 @@ public class MainActivity extends AppCompatActivity {
     public final static String TASK_NAME = "updatedTaskName";
     public final static String ITEM_POSITION = "itemPosition";
 
+    private FloatingActionButton fab;
+
     private RecyclerView recyclerViewTodos;
 
     ArrayList<Todo> items;
@@ -43,6 +46,7 @@ public class MainActivity extends AppCompatActivity {
         setContentView(R.layout.activity_main);
 
         recyclerViewTodos = findViewById(R.id.recyclerViewTodos);
+        fab = findViewById(R.id.fabAddTask);
 
         readItems();
 
@@ -79,23 +83,43 @@ public class MainActivity extends AppCompatActivity {
         TodoItemsAdapter todoItemsAdapter = new TodoItemsAdapter(items);
         recyclerViewTodos.setAdapter(todoItemsAdapter);
 
+        fab.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                showAddNewTaskDialog();
+                // create the new activity
+                //Intent i = new Intent(MainActivity.this, NewItemActivity.class);
+                // display the activity
+                //startActivityForResult(i, EDIT_REQUEST_CODE);
+            }
+        });
+
         //setupListViewListener();
     }
 
-    public void onAddItem(View v) {
-        EditText etNewItem = (EditText) findViewById(R.id.etNewItem);
-        String itemText = etNewItem.getText().toString();
-        Todo todo = new Todo();
-        todo.setTaskName(itemText);
-        items.add(todo);
+    private void showAddNewTaskDialog() {
+        String title = getResources().getString(R.string.title_add_task);
 
-        etNewItem.setText("");
-        writeItems();
-
-        Toast.makeText(getApplicationContext(), "Item added to list", Toast.LENGTH_SHORT).show();
+        FragmentManager fm = getSupportFragmentManager();
+        EditTaskDialogFragment editNameDialogFragment = EditTaskDialogFragment.newInstance(title, new Todo());
+        editNameDialogFragment.show(fm, "fragment_edit_task");
     }
 
-  //  private void setupListViewListener() {
+
+//    public void onAddItem(View v) {
+//        EditText etNewItem = (EditText) findViewById(R.id.etNewItem);
+//        String itemText = etNewItem.getText().toString();
+//        Todo todo = new Todo();
+//        todo.setTaskName(itemText);
+//        items.add(todo);
+//
+//        etNewItem.setText("");
+//        writeItems();
+//
+//        Toast.makeText(getApplicationContext(), "Item added to list", Toast.LENGTH_SHORT).show();
+//    }
+
+    //  private void setupListViewListener() {
 //        lvItems.setOnItemLongClickListener(new AdapterView.OnItemLongClickListener() {
 //
 //            @Override
@@ -188,6 +212,6 @@ public class MainActivity extends AppCompatActivity {
 //            writeItems();
 //            // notify the user the operation completed ok
 //            Toast.makeText(this, "Item updated successfully", Toast.LENGTH_SHORT).show();
-        }
     }
+}
 //}

@@ -6,34 +6,36 @@
     android:layout_height="match_parent"
     tools:context=".activities.MainActivity">
 
-    <Button
-        android:id="@+id/btnAddItem"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_alignParentEnd="true"
-        android:layout_alignParentRight="true"
-        android:layout_alignParentBottom="true"
-        android:onClick="onAddItem"
-        android:text="Add" />
-
     <android.support.v7.widget.RecyclerView
         android:id="@+id/recyclerViewTodos"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:layout_above="@+id/btnAddItem"
+        android:layout_above="@+id/fabAddTask"
         android:layout_alignParentStart="true"
         android:layout_alignParentLeft="true"
         android:layout_alignParentTop="true" />
 
-    <EditText
-        android:id="@+id/etNewItem"
+    <android.support.design.widget.FloatingActionButton
+        android:id="@+id/fabAddTask"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_alignParentStart="true"
-        android:layout_alignParentLeft="true"
-        android:layout_alignParentBottom="true"
-        android:layout_toLeftOf="@+id/btnAddItem"
-        android:ems="10"
-        android:hint="Add a new item here"
-        android:inputType="textPersonName" />
+        android:layout_marginRight="16dp"
+        android:layout_marginBottom="16dp"
+        android:src="@drawable/ic_add_task"
+        app:backgroundTint="@color/colorAccent"
+        android:layout_alignParentEnd="true"
+        android:layout_alignParentRight="true"
+        android:layout_alignParentBottom="true"/>
+
+    <!--<EditText-->
+        <!--android:id="@+id/etNewItem"-->
+        <!--android:layout_width="wrap_content"-->
+        <!--android:layout_height="wrap_content"-->
+        <!--android:layout_alignParentStart="true"-->
+        <!--android:layout_alignParentLeft="true"-->
+        <!--android:layout_alignParentBottom="true"-->
+        <!--android:layout_toLeftOf="@+id/btnAddItem"-->
+        <!--android:ems="10"-->
+        <!--android:hint="Add a new item here"-->
+        <!--android:inputType="textPersonName" />-->
 </RelativeLayout>
