@@ -79,7 +79,9 @@ public class EditTaskDialogFragment extends DialogFragment {
 
         String title = getArguments().getString("title", "Add New Task");
         dialog.setTitle(title);
-
+        dialog.setCancelable(false);
+        dialog.setCanceledOnTouchOutside(false);
+        
         dialog.getLayoutInflater().inflate(R.layout.fragment_edit_task, frameView);
 
         return dialog;
