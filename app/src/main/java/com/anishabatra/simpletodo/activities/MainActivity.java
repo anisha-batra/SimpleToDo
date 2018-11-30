@@ -1,4 +1,4 @@
-package com.anishabatra.simpletodo;
+package com.anishabatra.simpletodo.activities;
 
 import android.content.Intent;
 import android.os.Bundle;
@@ -12,11 +12,15 @@ import android.widget.EditText;
 import android.widget.ListView;
 import android.widget.Toast;
 
-import org.apache.commons.io.FileUtils;
+import com.anishabatra.simpletodo.R;
+import com.anishabatra.simpletodo.models.Todo;
 
-import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
+import java.io.FileOutputStream;
 import java.io.IOException;
-import java.nio.charset.Charset;
+import java.io.ObjectInputStream;
+import java.io.ObjectOutputStream;
 import java.util.ArrayList;
 
 public class MainActivity extends AppCompatActivity {
@@ -24,11 +28,11 @@ public class MainActivity extends AppCompatActivity {
     // numeric code to identify the edit activity
     public final static int EDIT_REQUEST_CODE = 20;
     // keys used for passing data between activities
-    public final static String ITEM_TEXT = "itemText";
+    public final static String TASK_NAME = "updatedTaskName";
     public final static String ITEM_POSITION = "itemPosition";
 
-    ArrayList<String> items;
-    ArrayAdapter<String> itemsAdapter;
+    ArrayList<Todo> items;
+    ArrayAdapter<Todo> itemsAdapter;
     ListView lvItems;
 
     @Override
@@ -37,7 +41,7 @@ public class MainActivity extends AppCompatActivity {
         setContentView(R.layout.activity_main);
 
         readItems();
-        itemsAdapter = new ArrayAdapter<String>(this, android.R.layout.simple_list_item_1, items);
+        itemsAdapter = new ArrayAdapter<Todo>(this, android.R.layout.simple_list_item_1, items);
         lvItems = (ListView) findViewById(R.id.lvItems);
         lvItems.setAdapter(itemsAdapter);
 
@@ -51,7 +55,10 @@ public class MainActivity extends AppCompatActivity {
     public void onAddItem(View v) {
         EditText etNewItem = (EditText) findViewById(R.id.etNewItem);
         String itemText = etNewItem.getText().toString();
-        itemsAdapter.add(itemText);
+        Todo todo = new Todo();
+        todo.setTaskName(itemText);
+        itemsAdapter.add(todo);
+
         etNewItem.setText("");
         writeItems();
 
@@ -78,7 +85,7 @@ public class MainActivity extends AppCompatActivity {
                 // create the new activity
                 Intent i = new Intent(MainActivity.this, EditItemActivity.class);
                 // pass the data being edited
-                i.putExtra(ITEM_TEXT, items.get(position));
+                i.putExtra(TASK_NAME, items.get(position));
                 i.putExtra(ITEM_POSITION, position);
                 // display the activity
                 startActivityForResult(i, EDIT_REQUEST_CODE);
@@ -87,27 +94,57 @@ public class MainActivity extends AppCompatActivity {
         });
     }
 
-    private File getDataFile() {
-        return new File(getFilesDir(), "todo.txt");
+    private String getDataFilePath() {
+        return "todo.txt";
     }
 
     private void readItems() {
+//        try {
+//            File f = new File(getDataFilePath());
+//            if (!f.exists()) {
+//                f.createNewFile();
+//            }
+//        } catch (IOException e) {
+//            e.printStackTrace();
+//            Log.e("MainActivity", "Error creating file", e);
+//        }
+
+        FileInputStream fis = null;
         try {
-            items = new ArrayList<>(FileUtils.readLines(getDataFile(), Charset.defaultCharset()));
+            fis = openFileInput(getDataFilePath());
+            ObjectInputStream ois = new ObjectInputStream(fis);
+            items = (ArrayList<Todo>) ois.readObject();
+            ois.close();
+        } catch (FileNotFoundException e) {
+            e.printStackTrace();
+            Log.e("MainActivity", "File not found", e);
         } catch (IOException e) {
             e.printStackTrace();
             Log.e("MainActivity", "Error reading file", e);
+        } catch (ClassNotFoundException e) {
+            e.printStackTrace();
+            Log.e("MainActivity", "Class not found", e);
+        }
+
+        if (items == null) {
             items = new ArrayList<>();
         }
     }
 
     private void writeItems() {
+        FileOutputStream fos = null;
         try {
-            FileUtils.writeLines(getDataFile(), items);
+            fos = openFileOutput(getDataFilePath(), MODE_PRIVATE);
+            ObjectOutputStream oos = new ObjectOutputStream(fos);
+            oos.writeObject(items);
+            oos.close();
+        } catch (FileNotFoundException e) {
+            e.printStackTrace();
+            Log.e("MainActivity", "File not found", e);
         } catch (IOException e) {
+            e.printStackTrace();
             Log.e("MainActivity", "Error writing file", e);
         }
-
     }
 
     @Override
@@ -116,11 +153,13 @@ public class MainActivity extends AppCompatActivity {
         // if the edit activity completed ok
         if (resultCode == RESULT_OK && requestCode == EDIT_REQUEST_CODE) {
             // extract updated item text from intent extras
-            String updatedItem = data.getExtras().getString(ITEM_TEXT);
+
+            String updatedTaskName = data.getStringExtra(TASK_NAME);
             // extract original position of edited item
             int position = data.getExtras().getInt(ITEM_POSITION);
             // update the model with the new item text at the edited position
-            items.set(position, updatedItem);
+            Todo todo = items.get(position);
+            todo.setTaskName(updatedTaskName);
             // notify the adapter that the model changed
             itemsAdapter.notifyDataSetChanged();
             // persist the changed model
